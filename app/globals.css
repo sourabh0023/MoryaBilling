@@ -84,3 +84,5 @@ button:disabled{opacity:.42;cursor:not-allowed}
 
 /* Hide menu cards until a dine-in table has been selected. */
 .menu-grid.hidden{display:none}
+
+.auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px}.auth-card{width:min(100%,420px);display:grid;gap:15px;padding:30px;background:var(--surface);border:1px solid var(--line);border-radius:18px;color:var(--text);box-shadow:0 20px 60px #0002}.auth-card .brand-mark{width:48px;height:48px}.auth-card h1{font:800 26px Manrope,sans-serif;margin:0}.auth-card p,.auth-card small{color:var(--muted);font-size:13px;line-height:1.6;margin:0}.auth-card label{display:grid;gap:7px;color:var(--muted);font-size:12px;font-weight:700}.auth-card input{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);outline:none}.auth-card input:focus{border-color:var(--orange)}
