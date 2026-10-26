@@ -252,3 +252,80 @@ button:disabled{opacity:.42;cursor:not-allowed}
 /* Install control belongs on the top brand row, opposite the restaurant logo */
 .brand{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand-identity{display:flex;align-items:center;gap:11px;min-width:0}.brand>.install-app-btn,.brand>.install-status{margin-left:auto;flex-shrink:0}
 @media(max-width:800px){.sidebar{padding:13px 15px 12px}.brand{width:100%;padding:0 3px 12px;justify-content:space-between}.brand-identity{min-width:0}.brand>.install-app-btn,.brand>.install-status{width:40px;height:40px;min-width:40px;border-radius:13px}.main-panel .top-actions>.install-app-btn,.main-panel .top-actions>.install-status{display:none!important}}
+
+
+/* Native iOS-inspired mobile shell */
+@media(max-width:800px){
+  html,body{min-height:100%;background:var(--bg);-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif}
+  .app{display:block;min-height:100dvh;padding-bottom:calc(82px + env(safe-area-inset-bottom));font-size:15px}
+  .sidebar{position:sticky;top:0;z-index:30;width:100%;height:auto;min-height:0;padding:calc(10px + env(safe-area-inset-top)) 16px 0;border:0;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:saturate(180%) blur(22px);-webkit-backdrop-filter:saturate(180%) blur(22px)}
+  .brand{padding:4px 0 13px!important;gap:12px}
+  .brand-mark{width:48px;height:48px;border-radius:15px;box-shadow:none}
+  .brand strong{font-size:21px;letter-spacing:-.8px}
+  .brand small{font-size:9px;letter-spacing:1.8px}
+  .branch-label,.sidebar-bottom{display:none}
+  .sidebar nav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:8px 7px calc(8px + env(safe-area-inset-bottom));border-top:1px solid color-mix(in srgb,var(--line) 78%,transparent);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px)}
+  .nav-item{min-width:0;min-height:52px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:5px 2px;border-radius:13px;font-size:10px;font-weight:650;letter-spacing:-.1px;color:var(--muted)}
+  .nav-item svg{width:20px;height:20px}
+  .nav-item.active{background:transparent;color:var(--orange)}
+  .nav-item.active:before{content:"";position:absolute}
+  .nav-item em{position:absolute;margin:0 0 28px 30px;padding:2px 5px;font-size:9px;border-radius:8px}
+  .main-panel{padding:0 16px;min-height:calc(100dvh - 74px)}
+  .topbar{min-height:76px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .topbar>h1,.topbar-heading h1{font-size:28px!important;letter-spacing:-1px;font-weight:750;line-height:1.12}
+  .today{gap:6px}
+  .today>svg{width:18px;height:18px}
+  .today>span{font-size:11px}
+  .today strong{font-size:11px;font-variant-numeric:tabular-nums}
+  .top-actions{gap:8px}
+  .icon-btn,.install-app-btn,.install-status{border-radius:14px}
+  .notice{margin-top:12px;border-radius:15px}
+  .tables-dashboard{padding-top:22px}
+  .section-title{align-items:center;margin-bottom:17px}
+  .section-title h2,.content-card h2{font-size:22px;letter-spacing:-.65px}
+  .section-title p{font-size:13px;line-height:1.45}
+  .count-pill,.warning-pill{border-radius:999px;padding:8px 11px}
+  .table-status-legend{gap:17px;margin:0 0 18px;font-size:12px}
+  .table-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  .table-dashboard-card{min-height:205px;padding:16px 14px;border-radius:22px;border:1px solid color-mix(in srgb,var(--line) 85%,transparent);box-shadow:0 1px 1px #00000012;gap:13px}
+  .table-dashboard-card:active{transform:scale(.985);background:var(--surface-2)}
+  .table-card-top strong{font-size:23px;letter-spacing:-.8px}
+  .table-state{font-size:10px;padding:7px 9px;border-radius:999px}
+  .table-card-total{font-size:16px;line-height:1.3;letter-spacing:-.35px}
+  .table-card-bottom{font-size:11px;gap:6px;flex-wrap:wrap}
+  .table-card-action{margin-top:auto;padding-top:12px;font-size:12px;border-top:1px solid var(--line)}
+  .content-card{margin:17px 0;padding:17px;border-radius:22px}
+  .table-wrap{border-radius:14px}
+  .search-box{height:50px;border-radius:16px;padding:0 15px}
+  .search-box input{font-size:15px}
+  .categories{padding:14px 0;gap:8px;scrollbar-width:none}
+  .categories::-webkit-scrollbar{display:none}
+  .category{border-radius:999px;padding:10px 15px;font-size:12px}
+  .menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .menu-card{min-height:168px;padding:14px;border-radius:20px;gap:9px}
+  .menu-card strong{font-size:13px}
+  .menu-card small{font-size:11px}
+  .menu-card b{font-size:16px}
+  .table-order-backdrop,.modal-backdrop{align-items:flex-end;padding:0;z-index:80;background:#0009;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+  .table-order-modal,.checkout-modal{width:100%;max-width:none;max-height:92dvh;overflow:auto;border-radius:26px 26px 0 0;padding:20px 16px calc(22px + env(safe-area-inset-bottom));border:1px solid var(--line);border-bottom:0;box-shadow:0 -12px 50px #0003}
+  .table-order-header{gap:12px;padding-bottom:16px}
+  .table-order-header h2{font-size:25px;letter-spacing:-.8px}
+  .table-order-header p{font-size:13px;line-height:1.45}
+  .billing-layout.table-order-layout{display:block;padding:14px 0}
+  .table-order-layout .cart-panel{display:none}
+  .table-draft-loading{border-radius:20px}
+  .checkout-modal{max-height:85dvh}
+  .checkout-btn,.primary-small,.secondary-btn,.print-btn{min-height:46px;border-radius:14px;font-size:13px}
+  input,select{font-size:16px!important}
+}
+@media(max-width:390px){
+  .main-panel{padding-left:12px;padding-right:12px}
+  .sidebar{padding-left:12px;padding-right:12px}
+  .table-card-grid{gap:8px}
+  .table-dashboard-card{padding:13px 11px;min-height:190px;border-radius:19px}
+  .table-card-top strong{font-size:21px}
+  .table-state{font-size:9px;padding:6px 7px}
+  .table-card-total{font-size:14px}
+  .nav-item{font-size:9px}
+}
