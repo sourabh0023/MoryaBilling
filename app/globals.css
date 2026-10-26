@@ -329,3 +329,18 @@ button:disabled{opacity:.42;cursor:not-allowed}
   .table-card-total{font-size:14px}
   .nav-item{font-size:9px}
 }
+
+
+/* Fix mobile brand visibility: keep the brand row above the bottom tabs */
+@media(max-width:800px){
+  .sidebar{padding-top:calc(10px + env(safe-area-inset-top))!important}
+  .sidebar .brand{position:relative;z-index:2;display:flex!important;visibility:visible!important;opacity:1!important;min-height:62px;padding:4px 0 13px!important;background:var(--surface);isolation:isolate}
+  .sidebar .brand-identity{display:flex!important;visibility:visible!important;opacity:1!important;flex:1;min-width:0}
+  .sidebar .brand-identity .brand-mark{display:grid!important;flex:0 0 48px;visibility:visible!important;opacity:1!important}
+  .sidebar .brand-identity>div:last-child{display:block!important;visibility:visible!important;opacity:1!important}
+  .sidebar .brand-identity strong,.sidebar .brand-identity small{display:block!important;visibility:visible!important;opacity:1!important;color:var(--text)}
+  .sidebar .brand-identity strong span{color:var(--orange)}
+  .sidebar .brand>.install-app-btn,.sidebar .brand>.install-status{display:inline-flex!important;visibility:visible!important;opacity:1!important;position:relative;z-index:3;flex:0 0 42px;width:42px;height:42px;min-width:42px;background:var(--surface-2)}
+  .sidebar nav{top:auto;bottom:0}
+  .main-panel .topbar{margin-top:0}
+}
