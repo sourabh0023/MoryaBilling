@@ -1,7 +1,6 @@
 -- MoryaBilling POS workflow tables. Run in Supabase SQL Editor once.
--- NOTE: This UI currently has no sign-in. Policies below allow anon access so the
--- prototype works; do not store sensitive business/customer data until authentication
--- and branch-scoped RLS policies are implemented.
+-- The UI requires owner sign-in. Policies allow authenticated sessions only.
+-- Disable public sign-ups in Supabase and create the owner account in the Dashboard.
 create table if not exists public.pos_menu_items (
   id bigint primary key,
   name text not null,
