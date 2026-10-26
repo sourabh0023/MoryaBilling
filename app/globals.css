@@ -344,3 +344,43 @@ button:disabled{opacity:.42;cursor:not-allowed}
   .sidebar nav{top:auto;bottom:0}
   .main-panel .topbar{margin-top:0}
 }
+
+
+/* Mobile header override: the logo and install control must never be hidden */
+@media screen and (max-width: 800px) {
+  .app > .sidebar { display:flex !important; flex-direction:column !important; align-items:stretch !important; }
+  .app > .sidebar > .brand {
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    justify-content:space-between !important; gap:12px !important; width:100% !important;
+    min-height:64px !important; height:auto !important; padding:8px 4px 14px !important;
+    margin:0 !important; visibility:visible !important; opacity:1 !important;
+    position:relative !important; inset:auto !important; transform:none !important;
+    overflow:visible !important; background:transparent !important;
+  }
+  .app > .sidebar > .brand .brand-identity {
+    display:flex !important; flex-direction:row !important; align-items:center !important;
+    gap:10px !important; min-width:0 !important; flex:1 1 auto !important;
+    visibility:visible !important; opacity:1 !important;
+  }
+  .app > .sidebar > .brand .brand-mark {
+    display:flex !important; align-items:center !important; justify-content:center !important;
+    width:48px !important; height:48px !important; flex:0 0 48px !important;
+    visibility:visible !important; opacity:1 !important;
+  }
+  .app > .sidebar > .brand .brand-identity strong {
+    display:block !important; font-size:21px !important; line-height:1.15 !important;
+    visibility:visible !important; opacity:1 !important;
+  }
+  .app > .sidebar > .brand .brand-identity small {
+    display:block !important; font-size:9px !important; letter-spacing:2px !important;
+    margin-top:4px !important; visibility:visible !important; opacity:1 !important;
+  }
+  .app > .sidebar > .brand > button,
+  .app > .sidebar > .brand > .install-app-btn,
+  .app > .sidebar > .brand > .install-status {
+    display:inline-flex !important; align-items:center !important; justify-content:center !important;
+    flex:0 0 46px !important; width:46px !important; height:46px !important;
+    min-width:46px !important; margin-left:auto !important; visibility:visible !important; opacity:1 !important;
+    position:relative !important; z-index:10 !important;
+  }
+}
