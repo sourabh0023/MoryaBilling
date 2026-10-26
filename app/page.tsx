@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "../lib/supabase/client";
 import { BarChart3, ClipboardList, Clock3, LayoutDashboard, Moon, Plus, Printer, Search, Settings, Sun, UtensilsCrossed, X, ReceiptText, CalendarDays, Star } from "lucide-react";
 import InstallButton from "./install-button";
@@ -47,6 +47,7 @@ export default function Home() {
   const [dbReady, setDbReady] = useState(false);
   const [draftLoading, setDraftLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authEmail, setAuthEmail] = useState("");
@@ -143,18 +144,20 @@ export default function Home() {
     if (!table || table === "—") { setNotice("Select a table before saving the order."); return; }
     if (!cart.length) { setNotice("Add at least one item before saving a bill."); return; }
     if (!supabase) { setNotice("Supabase is not configured. Set the Vercel environment variables before saving bills."); return; }
-    if (saving) return;
+    if (savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     const now = new Date().toISOString();
     const billId = editingBillId ?? ("MB-" + Date.now().toString().slice(-7));
     const payload = { id: billId, table_name: table, items: cart, subtotal: total, discount: 0, total, payment: null, status: "Saved", updated_at: now, ...(editingBillId ? {} : { created_at: now }) };
     const { error } = await supabase.from("pos_bills").upsert(payload, { onConflict: "id" });
-    if (error) { setNotice("Order was not saved. Please try again. " + error.message); setSaving(false); return; }
+    if (error) { setNotice("Order was not saved. Please try again. " + error.message); savingRef.current = false; setSaving(false); return; }
     const draftDelete = await supabase.from("pos_active_orders").delete().eq("table_name", table);
     const saved: Bill = { id: billId, date: new Date(now).toLocaleString("en-IN"), items: cart.map(i => ({ ...i })), total, payment: "Not recorded", status: "Saved", table };
     setBills(old => editingBillId ? old.map(b => b.id === billId ? saved : b) : [saved, ...old]);
     setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setActive("Bill History");
     setNotice(draftDelete.error ? "Order saved, but its draft could not be cleared: " + draftDelete.error.message : "Order " + billId + " saved for table " + table + ". Payment has not been recorded.");
+    savingRef.current = false;
     setSaving(false);
   };
   const startEdit = (b: Bill) => {
