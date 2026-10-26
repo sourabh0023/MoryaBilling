@@ -73,6 +73,19 @@ export default function Home() {
   const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.qty, 0), [cart]);
   useEffect(() => { const timer = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(timer); }, []);
   useEffect(() => {
+    if (!showTableOrderModal) return;
+    const marker = { moryaTableOrderModal: true };
+    window.history.pushState(marker, "", window.location.href);
+    const onBack = () => { setShowTableOrderModal(false); setShowCheckout(false); setShowMobileCart(false); setHistoryEditing(false); };
+    window.addEventListener("popstate", onBack);
+    return () => window.removeEventListener("popstate", onBack);
+  }, [showTableOrderModal]);
+  const closeTableOrderModal = () => {
+    setShowCheckout(false); setShowMobileCart(false); setHistoryEditing(false);
+    if (window.history.state?.moryaTableOrderModal) window.history.back();
+    else setShowTableOrderModal(false);
+  };
+  useEffect(() => {
     if (!supabase) { setAuthLoading(false); return; }
     supabase.auth.getSession().then(({ data }) => { setSession(data.session); setAuthLoading(false); }).catch(() => setAuthLoading(false));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => { setSession(nextSession); setAuthLoading(false); });
@@ -242,7 +255,7 @@ export default function Home() {
           <span className="table-card-action">{info.occupied ? "Continue order →" : "Open table →"}</span>
         </button>; })}</div>
       </section>}
-      {(active === "Billing" || historyEditing) && showTableOrderModal && <div className="table-order-backdrop" onClick={() => setShowTableOrderModal(false)}><section className="table-order-modal" onClick={e => e.stopPropagation()}>
+      {(active === "Billing" || historyEditing) && showTableOrderModal && <div className="table-order-backdrop" onClick={closeTableOrderModal}><section className="table-order-modal" onClick={e => e.stopPropagation()}>
         <header className="table-order-header"><div><span className="eyebrow">DINE-IN ORDER</span><h2>Table {table}</h2><p>{tableInfo(table).occupied ? "Occupied · " + elapsed(tableInfo(table).started) : "New table order"} · {cart.reduce((s,i)=>s+i.qty,0)} items</p></div><div className="table-order-header-actions">{cart.length>0 && <button className="primary-small mobile-preview-action" onClick={()=>setShowCheckout(true)}>Order preview · {money(total)}</button>}<button className="icon-btn" onClick={() => {setShowTableOrderModal(false);setHistoryEditing(false);}} aria-label="Close table order"><X size={19}/></button></div></header>
         {draftLoading && <div className="table-draft-loading" role="status"><span className="culinary-loader" aria-hidden="true"><UtensilsCrossed size={34} strokeWidth={2.2}/><span className="culinary-loader-orbit"/></span><strong>Preparing Table {table}…</strong><small>Getting your order ready</small></div>}<div className={"billing-layout table-order-layout"+(draftLoading?" is-loading-draft":"")}>
           <div className="menu-area">
