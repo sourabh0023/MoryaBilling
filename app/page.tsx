@@ -92,7 +92,11 @@ export default function Home() {
     return () => window.removeEventListener("popstate", onBack);
   }, []);
   const closeTableOrderModal = () => {
+    // Closing saved-bill editing must never turn the saved bill into a new active table draft.
+    const wasEditingSavedBill = historyEditing;
     setShowCheckout(false); setShowMobileCart(false); setHistoryEditing(false); setShowTableOrderModal(false);
+    setCart([]); setEditingBillId(null); setTable("—");
+    if (wasEditingSavedBill) setActiveOrders(old => old.filter(o => o.table_name !== table));
   };
   useEffect(() => {
     if (!supabase) { setAuthLoading(false); return; }
@@ -279,7 +283,7 @@ export default function Home() {
         </button>; })}</div>
       </section>}
       {(active === "Billing" || historyEditing) && showTableOrderModal && <div className="table-order-backdrop" onClick={closeTableOrderModal}><section className="table-order-modal" onClick={e => e.stopPropagation()}>
-        <header className="table-order-header"><div><span className="eyebrow">DINE-IN ORDER</span><h2>Table {table}</h2><p>{historyEditing ? "Editing saved bill · table remains available" : tableInfo(table).occupied ? "Occupied · " + elapsed(tableInfo(table).started) : "New table order"} · {cart.reduce((s,i)=>s+i.qty,0)} items</p></div><div className="table-order-header-actions">{cart.length>0 && <button className="primary-small mobile-preview-action" onClick={()=>setShowCheckout(true)}>Order preview · {money(total)}</button>}<button className="icon-btn" onClick={() => {setShowTableOrderModal(false);setHistoryEditing(false);}} aria-label="Close table order"><X size={19}/></button></div></header>
+        <header className="table-order-header"><div><span className="eyebrow">DINE-IN ORDER</span><h2>Table {table}</h2><p>{historyEditing ? "Editing saved bill · table remains available" : tableInfo(table).occupied ? "Occupied · " + elapsed(tableInfo(table).started) : "New table order"} · {cart.reduce((s,i)=>s+i.qty,0)} items</p></div><div className="table-order-header-actions">{cart.length>0 && <button className="primary-small mobile-preview-action" onClick={()=>setShowCheckout(true)}>Order preview · {money(total)}</button>}<button className="icon-btn" onClick={closeTableOrderModal} aria-label="Close table order"><X size={19}/></button></div></header>
         {draftLoading && <div className="table-draft-loading" role="status"><span className="culinary-loader" aria-hidden="true"><UtensilsCrossed size={34} strokeWidth={2.2}/><span className="culinary-loader-orbit"/></span><strong>Preparing Table {table}…</strong><small>Getting your order ready</small></div>}<div className={"billing-layout table-order-layout"+(draftLoading?" is-loading-draft":"")}>
           <div className="menu-area">
             <div className="search-box"><Search size={17}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search menu items…"/>{search && <button onClick={()=>setSearch("")}><X size={15}/></button>}<kbd>⌕</kbd></div>
