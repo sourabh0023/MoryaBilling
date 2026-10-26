@@ -64,3 +64,12 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .report-cards .report-card{width:100%;text-align:left;cursor:pointer;color:var(--text);font:inherit}
 .report-cards .report-card strong{display:block;margin:10px 0;font-family:Manrope,sans-serif;font-size:20px}
 @media(max-width:650px){.menu-editor{grid-template-columns:1fr 1fr}.menu-editor input:first-child{grid-column:1/-1}.menu-editor button{width:100%}.report-cards{grid-template-columns:1fr}.order-preview-meta{font-size:12px}}
+
+.restaurant-settings{display:grid;gap:12px;margin:16px 0 8px;max-width:720px}
+.restaurant-settings label{display:grid;gap:6px;color:var(--muted);font-size:12px;font-weight:600}
+.restaurant-settings input{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:14px}
+.restaurant-settings .primary-small{justify-self:start}
+.logout-row{margin-top:20px}
+.logout-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #dc6262;border-radius:10px;background:transparent;color:#dc6262;font:inherit;font-weight:700;cursor:pointer}
+.logout-btn:hover{background:rgba(220,98,98,.1)}
+@media(max-width:650px){.restaurant-settings .primary-small{width:100%}.logout-row{align-items:flex-start;gap:12px}.logout-btn{flex-shrink:0}}
