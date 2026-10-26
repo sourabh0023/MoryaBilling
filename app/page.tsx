@@ -180,7 +180,8 @@ export default function Home() {
     const { error } = await supabase.from("pos_bills").upsert(payload, { onConflict: "id" });
     if (error) { setNotice("Order was not saved. Please try again. " + error.message); savingRef.current = false; setSaving(false); return; }
     const draftDelete = await supabase.from("pos_active_orders").delete().eq("table_name", table);
-    const saved: Bill = { id: billId, date: new Date(now).toLocaleString("en-IN"), createdAt: now, items: cart.map(i => ({ ...i })), total, payment: "Not recorded", status: "Saved", table };
+    const originalBill = editingBillId ? bills.find(b => b.id === editingBillId) : undefined;
+    const saved: Bill = { id: billId, date: originalBill?.date ?? new Date(now).toLocaleString("en-IN"), createdAt: originalBill?.createdAt ?? now, items: cart.map(i => ({ ...i })), total, payment: "Not recorded", status: "Saved", table };
     setBills(old => editingBillId ? old.map(b => b.id === billId ? saved : b) : [saved, ...old]);
     setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setShowTableOrderModal(false); setActiveOrders(old => old.filter(o => o.table_name !== table)); setActive("Bill History");
     setNotice(draftDelete.error ? "Order saved, but its draft could not be cleared: " + draftDelete.error.message : "Order " + billId + " saved for table " + table + ". Payment has not been recorded.");
