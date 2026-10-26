@@ -247,3 +247,8 @@ button:disabled{opacity:.42;cursor:not-allowed}
 /* Header layout: keep install action pinned to the far right */
 .topbar{position:relative}.topbar-heading{min-width:0;flex:1}.topbar-heading h1{margin:0}.top-actions{margin-left:auto;justify-content:flex-end;flex-shrink:0}.today{order:0}.top-actions>.install-app-btn,.top-actions>.install-status{order:2}.top-actions>.icon-btn{order:3}
 @media(max-width:800px){.topbar{width:100%;justify-content:space-between}.topbar-heading{flex:1;min-width:0}.topbar-heading h1{font-size:22px;white-space:normal}.top-actions{margin-left:auto;gap:7px;flex-shrink:0}.today{gap:5px}.install-app-btn,.install-status{width:38px;height:38px;min-width:38px}.top-actions>.icon-btn{width:38px;height:38px;min-width:38px}}
+
+
+/* Install control belongs on the top brand row, opposite the restaurant logo */
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand-identity{display:flex;align-items:center;gap:11px;min-width:0}.brand>.install-app-btn,.brand>.install-status{margin-left:auto;flex-shrink:0}
+@media(max-width:800px){.sidebar{padding:13px 15px 12px}.brand{width:100%;padding:0 3px 12px;justify-content:space-between}.brand-identity{min-width:0}.brand>.install-app-btn,.brand>.install-status{width:40px;height:40px;min-width:40px;border-radius:13px}.main-panel .top-actions>.install-app-btn,.main-panel .top-actions>.install-status{display:none!important}}
