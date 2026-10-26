@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, Smartphone } from "lucide-react";
+import { Smartphone } from "lucide-react";
 
 type InstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }> };
 
@@ -43,10 +43,10 @@ export default function InstallButton() {
     setPromptEvent(null);
   };
 
-  if (installed) return <span className="install-status"><Smartphone size={15}/> App installed</span>;
+  if (installed) return <span className="install-status is-installed" title="MoryaBilling is installed" aria-label="MoryaBilling installed"><Smartphone size={20}/></span>;
 
   return <>
-    <button className="install-app-btn" onClick={install}><Download size={15}/><span>Install app</span></button>
+    <button className="install-app-btn" onClick={install} title="Install MoryaBilling" aria-label="Install MoryaBilling"><Smartphone size={20}/></button>
     {help && <div className="install-help" role="dialog" aria-label="Install MoryaBilling">
       <div className="install-help-title"><Smartphone size={18}/> Install MoryaBilling</div>
       <button className="install-help-close" onClick={() => setHelp(false)} aria-label="Close install instructions">×</button>
