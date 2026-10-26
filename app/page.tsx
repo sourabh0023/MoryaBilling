@@ -142,7 +142,7 @@ export default function Home() {
         else { const unpaid = bills.find(b => b.table === nextTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved"); setCart(unpaid?.items.map(i => ({ ...i })) ?? []); setEditingBillId(unpaid?.id ?? null); }
         setActiveOrders(old => data ? [...old.filter(o => o.table_name !== nextTable), { table_name: nextTable, items: draftItems, created_at: old.find(o => o.table_name === nextTable)?.created_at ?? new Date().toISOString() }] : old.filter(o => o.table_name !== nextTable));
       } else { setCart([]); setEditingBillId(null); }
-    } finally { window.setTimeout(() => setDraftLoading(false), Math.max(0, 1500 - (Date.now() - loadingStartedAt))); }
+    } finally { window.setTimeout(() => setDraftLoading(false), Math.max(0, 1000 - (Date.now() - loadingStartedAt))); }
   };
   const openTable = (name: string) => {
     // Open immediately for a responsive client-side feel, then hydrate the selected table's draft.
