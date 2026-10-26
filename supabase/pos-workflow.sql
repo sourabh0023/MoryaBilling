@@ -28,14 +28,20 @@ create table if not exists public.pos_bills (
   total numeric(10,2) not null default 0,
   payment text,
   status text not null default 'Saved',
+  paid_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 create table if not exists public.pos_active_orders (
   table_name text primary key,
   items jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Additive upgrades for projects that already ran an earlier version of this script.
+alter table public.pos_bills add column if not exists paid_at timestamptz;
+alter table public.pos_active_orders add column if not exists created_at timestamptz not null default now();
 insert into public.pos_menu_items (id,name,category,price,is_favorite) values
 (1,'Puneri Misal','Misal',90,false),(2,'Gavran Misal','Misal',100,false),
 (3,'Special Misal Pav','Misal',130,false),(4,'Sada Dosa','South Indian',80,false),
