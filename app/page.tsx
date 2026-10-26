@@ -94,7 +94,7 @@ export default function Home() {
       if (menuResult.data?.length) setMenuItems(menuResult.data.map((p: any) => ({ id: Number(p.id), name: p.name, category: p.category, price: Number(p.price) })));
       else await supabase.from("pos_menu_items").upsert(initialMenu.map(p => ({ ...p, is_favorite: false })), { onConflict: "id" });
       if (menuResult.data?.length) setFavoriteIds(menuResult.data.filter((p: any) => p.is_favorite).map((p: any) => Number(p.id)));
-      if (tableResult.data?.length) setTableNames(tableResult.data.map((t: any) => t.name));
+      if (tableResult.data?.length) setTableNames(tableResult.data.map((t: any) => t.name).filter((name: string) => !/^parcel\s*\d*$/i.test(name.trim())));
       if (settingsResult.data?.value) setRestaurant({ name: settingsResult.data.value.name ?? "MORYA MISAL", address: settingsResult.data.value.address ?? "", phone: settingsResult.data.value.phone ?? "", footer: settingsResult.data.value.footer ?? "Thank you for visiting!" });
       if (billResult.data) setBills(billResult.data.map((b: any) => ({ id: b.id, date: new Date(b.created_at).toLocaleString("en-IN"), createdAt: b.created_at, items: b.items as CartItem[], total: Number(b.total), payment: b.payment ?? "Not recorded", status: b.status ?? "Saved", table: b.table_name })));
       if (activeResult.data) setActiveOrders(activeResult.data.map((o: any) => ({ table_name: o.table_name, items: (o.items ?? []) as CartItem[], created_at: o.created_at ?? o.updated_at ?? new Date().toISOString() })));
