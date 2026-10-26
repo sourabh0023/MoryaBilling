@@ -106,7 +106,7 @@ export default function Home() {
     if (!supabase || !dbReady || draftLoading || table === "—") return;
     const timer = window.setTimeout(async () => {
       const result = cart.length
-        ? await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, updated_at: new Date().toISOString() }, { onConflict: "table_name" })
+        ? await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" })
         : await supabase.from("pos_active_orders").delete().eq("table_name", table);
       if (result.error) setNotice("Could not save the draft for table " + table + ": " + result.error.message);
       else if (cart.length) setActiveOrders(old => { const found = old.find(o => o.table_name === table); return [...old.filter(o => o.table_name !== table), { table_name: table, items: cart.map(i => ({ ...i })), created_at: found?.created_at ?? new Date().toISOString() }]; });
@@ -118,7 +118,7 @@ export default function Home() {
     if (!nextTable || nextTable === "—") return;
     setDraftLoading(true);
     if (supabase && table !== "—" && cart.length) {
-      const previousSave = await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, updated_at: new Date().toISOString() }, { onConflict: "table_name" });
+      const previousSave = await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" });
       if (previousSave.error) setNotice("Could not preserve the order for " + table + ": " + previousSave.error.message);
       else setActiveOrders(old => { const found = old.find(o => o.table_name === table); return [...old.filter(o => o.table_name !== table), { table_name: table, items: cart.map(i => ({ ...i })), created_at: found?.created_at ?? new Date().toISOString() }]; });
     }
