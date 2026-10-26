@@ -49,14 +49,36 @@ export default function Home() {
   const filtered = initialMenu.filter(p => (category === "All" || p.category === category) && p.name.toLowerCase().includes(search.toLowerCase()));
   const add = (p: Product) => setCart(old => { const found = old.find(i => i.id === p.id); return found ? old.map(i => i.id === p.id ? { ...i, qty: i.qty + 1 } : i) : [...old, { ...p, qty: 1 }]; });
   const changeQty = (id: number, delta: number) => setCart(old => old.map(i => i.id === id ? { ...i, qty: i.qty + delta } : i).filter(i => i.qty > 0));
+  const printReceipt = (bill?: {id:string;date:string;items:CartItem[];total:number;payment:string;status:string}) => {
+    const items = bill?.items ?? cart;
+    if (!items.length) { setNotice("Add items before printing."); return; }
+    const billId = bill?.id ?? editingBillId ?? "DRAFT";
+    const billDate = bill?.date ?? new Date().toLocaleString("en-IN");
+    const billTotal = bill?.total ?? total;
+    const billPayment = bill?.payment ?? payment;
+    const safe = (s: string) => s.replace(/[&<>"\']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","\'":"&#39;"}[ch] ?? ch));
+    const rows = items.map(item => `<tr><td>${safe(item.name)}<small>${money(item.price)} × ${item.qty}</small></td><td class="num">${money(item.price * item.qty)}</td></tr>`).join("");
+    const receipt = `<!doctype html><html><head><meta charset="utf-8"><title>${safe(billId)} - Morya Misal</title><style>@page{size:80mm auto;margin:4mm}*{box-sizing:border-box}body{font:12px Arial,sans-serif;color:#111;width:100%;margin:0}.receipt{text-align:center}h1{font-size:20px;margin:0 0 4px}p{margin:3px 0}.rule{border-top:1px dashed #333;margin:9px 0}table{width:100%;border-collapse:collapse;text-align:left}td{padding:5px 0;vertical-align:top}td.num{text-align:right;white-space:nowrap}small{display:block;color:#444;font-size:10px;margin-top:2px}.total{font-size:16px;font-weight:bold;display:flex;justify-content:space-between;margin-top:8px}.meta{text-align:left;line-height:1.6;font-size:11px}.thanks{margin-top:14px;font-weight:bold}@media screen{body{max-width:320px;margin:20px auto;padding:12px;border:1px solid #ddd}}</style></head><body><div class="receipt"><h1>MORYA MISAL</h1><p>Thank you for visiting!</p><div class="rule"></div><div class="meta"><div>Bill: ${safe(billId)}</div><div>Date: ${safe(billDate)}</div><div>Order: ${orderType === "Dine-in" ? safe(table) : "Parcel"}</div><div>Payment: ${safe(billPayment)}</div></div><div class="rule"></div><table>${rows}</table><div class="rule"></div><div class="total"><span>TOTAL</span><span>${money(billTotal)}</span></div><p class="thanks">धन्यवाद! पुन्हा भेट द्या.</p></div><script>window.onload=()=>setTimeout(()=>window.print(),250);window.onafterprint=()=>window.close();</script></body></html>`;
+    const win = window.open("", "_blank", "width=420,height=720");
+    if (!win) { setNotice("The receipt window was blocked. Allow pop-ups for this site, then try Print again."); return; }
+    win.document.open(); win.document.write(receipt); win.document.close();
+  };
   const saveBill = () => {
     if (!cart.length) { setNotice("Add at least one item before saving a bill."); return; }
-    const bill = { id: "MB-" + Date.now().toString().slice(-7), date: new Date().toLocaleString("en-IN"), items: cart, total, payment, status: "Paid" };
-    setBills(old => [bill, ...old]); setCart([]); setShowCheckout(false); setShowMobileCart(false); setNotice("Bill saved in this browser session. Connect Supabase to store it permanently.");
-    setActive("Bill History");
+    if (editingBillId) {
+      setBills(old => old.map(b => b.id === editingBillId ? {...b, items:cart, total, payment, date:new Date().toLocaleString("en-IN")} : b));
+      setNotice(`Bill ${editingBillId} updated in this browser session. Supabase persistence is not connected yet.`);
+    } else {
+      const bill = { id: "MB-" + Date.now().toString().slice(-7), date: new Date().toLocaleString("en-IN"), items: cart, total, payment, status: "Paid" };
+      setBills(old => [bill, ...old]);
+      setNotice("Bill saved in this browser session. Supabase persistence is not connected yet.");
+    }
+    setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setActive("Bill History");
   };
-  const printCart = () => { if (!cart.length) { setNotice("Add items before printing."); return; } window.print(); };
-  const nav = [{name:"Billing",icon:LayoutDashboard},{name:"Bill History",icon:ClipboardList},{name:"Reports",icon:BarChart3},{name:"Day Summary",icon:CalendarDays},{name:"Menu Management",icon:UtensilsCrossed},{name:"Settings",icon:Settings}];
+  const startEdit = (b: {id:string;items:CartItem[];payment:string}) => {
+    setEditingBillId(b.id); setCart(b.items.map(i=>({...i}))); setPayment(b.payment); setActive("Billing"); setNotice(`Editing ${b.id}. Confirm and save to update this session\'s bill record.`);
+  };
+    const nav = [{name:"Billing",icon:LayoutDashboard},{name:"Bill History",icon:ClipboardList},{name:"Reports",icon:BarChart3},{name:"Day Summary",icon:CalendarDays},{name:"Menu Management",icon:UtensilsCrossed},{name:"Settings",icon:Settings}];
   return <main className={dark ? "app dark" : "app light"}>
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark"><UtensilsCrossed size={22}/></div><div><strong>Morya<span>Billing</span></strong><small>RESTAURANT POS</small></div></div>
