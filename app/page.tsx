@@ -118,24 +118,41 @@ export default function Home() {
   }, [cart, table, dbReady, draftLoading, supabase]);
   const selectTable = async (nextTable: string) => {
     if (!nextTable || nextTable === "—") return;
+    const previousTable = table;
+    const previousCart = cart.map(item => ({ ...item }));
     setDraftLoading(true);
-    if (supabase && table !== "—" && cart.length) {
-      const previousSave = await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" });
-      if (previousSave.error) setNotice("Could not preserve the order for " + table + ": " + previousSave.error.message);
-      else setActiveOrders(old => { const found = old.find(o => o.table_name === table); return [...old.filter(o => o.table_name !== table), { table_name: table, items: cart.map(i => ({ ...i })), created_at: found?.created_at ?? new Date().toISOString() }]; });
-    }
     setTable(nextTable);
-    if (supabase) {
-      const { data, error } = await supabase.from("pos_active_orders").select("items").eq("table_name", nextTable).maybeSingle();
-      if (error) setNotice("Could not load the draft for " + nextTable + ": " + error.message);
-      const draftItems = (data?.items as CartItem[] | undefined) ?? [];
-      if (data) { setCart(draftItems); setEditingBillId(null); }
-      else { const unpaid = bills.find(b => b.table === nextTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved"); setCart(unpaid?.items.map(i => ({ ...i })) ?? []); setEditingBillId(unpaid?.id ?? null); }
-      setActiveOrders(old => data ? [...old.filter(o => o.table_name !== nextTable), { table_name: nextTable, items: draftItems, created_at: old.find(o => o.table_name === nextTable)?.created_at ?? new Date().toISOString() }] : old.filter(o => o.table_name !== nextTable));
-    } else { setCart([]); setEditingBillId(null); }
-    setDraftLoading(false);
+    setCart([]);
+    setEditingBillId(null);
+    // Preserve the previous table draft in the background; do not make the new table popup wait for this save.
+    if (supabase && previousTable !== "—" && previousCart.length) {
+      void supabase.from("pos_active_orders").upsert({ table_name: previousTable, items: previousCart, created_at: activeOrders.find(o => o.table_name === previousTable)?.created_at ?? bills.find(b => b.table === previousTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" }).then(({error}) => {
+        if (error) setNotice("Could not preserve the order for " + previousTable + ": " + error.message);
+        else setActiveOrders(old => { const found = old.find(o => o.table_name === previousTable); return [...old.filter(o => o.table_name !== previousTable), { table_name: previousTable, items: previousCart, created_at: found?.created_at ?? new Date().toISOString() }]; });
+      });
+    }
+    try {
+      if (supabase) {
+        const { data, error } = await supabase.from("pos_active_orders").select("items").eq("table_name", nextTable).maybeSingle();
+        if (error) setNotice("Could not load the draft for " + nextTable + ": " + error.message);
+        const draftItems = (data?.items as CartItem[] | undefined) ?? [];
+        if (data) { setCart(draftItems); setEditingBillId(null); }
+        else { const unpaid = bills.find(b => b.table === nextTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved"); setCart(unpaid?.items.map(i => ({ ...i })) ?? []); setEditingBillId(unpaid?.id ?? null); }
+        setActiveOrders(old => data ? [...old.filter(o => o.table_name !== nextTable), { table_name: nextTable, items: draftItems, created_at: old.find(o => o.table_name === nextTable)?.created_at ?? new Date().toISOString() }] : old.filter(o => o.table_name !== nextTable));
+      } else { setCart([]); setEditingBillId(null); }
+    } finally { setDraftLoading(false); }
   };
-  const openTable = async (name: string) => { await selectTable(name); setSearch(""); setCategory("All"); setFavoritesOnly(favoriteIds.length > 0); setShowTableOrderModal(true); };
+  const openTable = (name: string) => {
+    // Open immediately for a responsive client-side feel, then hydrate the selected table's draft.
+    setTable(name);
+    setCart([]);
+    setEditingBillId(null);
+    setSearch("");
+    setCategory("All");
+    setFavoritesOnly(favoriteIds.length > 0);
+    setShowTableOrderModal(true);
+    void selectTable(name);
+  };
   const markPaid = async (bill: Bill) => {
     if (!supabase) { setNotice("Supabase is not configured."); return; }
     const paidAt = new Date().toISOString();
@@ -225,7 +242,7 @@ export default function Home() {
       </section>}
       {active === "Billing" && showTableOrderModal && <div className="table-order-backdrop" onClick={() => setShowTableOrderModal(false)}><section className="table-order-modal" onClick={e => e.stopPropagation()}>
         <header className="table-order-header"><div><span className="eyebrow">DINE-IN ORDER</span><h2>Table {table}</h2><p>{tableInfo(table).occupied ? "Occupied · " + elapsed(tableInfo(table).started) : "New table order"} · {cart.reduce((s,i)=>s+i.qty,0)} items</p></div><div className="table-order-header-actions">{cart.length>0 && <button className="primary-small mobile-preview-action" onClick={()=>setShowCheckout(true)}>Order preview · {money(total)}</button>}<button className="icon-btn" onClick={() => setShowTableOrderModal(false)} aria-label="Close table order"><X size={19}/></button></div></header>
-        <div className="billing-layout table-order-layout">
+        {draftLoading && <div className="table-draft-loading" role="status"><span className="table-loading-spinner"/><strong>Opening Table {table}…</strong><small>Loading saved order</small></div>}<div className={"billing-layout table-order-layout"+(draftLoading?" is-loading-draft":"")}>
           <div className="menu-area">
             <div className="search-box"><Search size={17}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search menu items…"/>{search && <button onClick={()=>setSearch("")}><X size={15}/></button>}<kbd>⌕</kbd></div>
             <div className="categories"><button onClick={()=>setFavoritesOnly(v=>!v)} className={favoritesOnly?"category favorite-category active-category":"category favorite-category"}><Star size={15} fill={favoritesOnly?"currentColor":"none"}/> Favorites ({favoriteIds.length})</button>{categories.map(c=><button key={c} onClick={()=>{setCategory(c);setFavoritesOnly(false);}} className={!favoritesOnly&&category===c?"category active-category":"category"}>{c}</button>)}</div>
