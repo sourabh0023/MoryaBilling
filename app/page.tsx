@@ -133,7 +133,7 @@ export default function Home() {
     } else { setCart([]); setEditingBillId(null); }
     setDraftLoading(false);
   };
-  const openTable = async (name: string) => { await selectTable(name); setSearch(""); setCategory("All"); setFavoritesOnly(false); setShowTableOrderModal(true); };
+  const openTable = async (name: string) => { await selectTable(name); setSearch(""); setCategory("All"); setFavoritesOnly(favoriteIds.length > 0); setShowTableOrderModal(true); };
   const markPaid = async (bill: Bill) => {
     if (!supabase) { setNotice("Supabase is not configured."); return; }
     const paidAt = new Date().toISOString();
@@ -184,7 +184,7 @@ export default function Home() {
     const originalBill = editingBillId ? bills.find(b => b.id === editingBillId) : undefined;
     const saved: Bill = { id: billId, date: originalBill?.date ?? new Date(now).toLocaleString("en-IN"), createdAt: originalBill?.createdAt ?? now, items: cart.map(i => ({ ...i })), total, payment: "Not recorded", status: "Saved", table };
     setBills(old => editingBillId ? old.map(b => b.id === billId ? saved : b) : [saved, ...old]);
-    setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setShowTableOrderModal(false); setActiveOrders(old => old.filter(o => o.table_name !== table)); setActive("Bill History");
+    setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setShowTableOrderModal(false); setActiveOrders(old => old.filter(o => o.table_name !== table));
     setNotice(draftDelete.error ? "Bill saved, but its draft could not be cleared: " + draftDelete.error.message : "Bill " + billId + " saved. Table " + table + " is now available.");
     if (printAfterSave && printWindow) printReceipt(saved, printWindow);
     savingRef.current = false;
@@ -193,7 +193,7 @@ export default function Home() {
   const startEdit = (b: Bill) => {
     setEditingBillId(b.id); setTable(b.table); setCart(b.items.map(i=>({...i}))); setPayment("Cash"); setActive("Billing"); setShowTableOrderModal(true); setNotice("Editing saved order " + b.id + ". Save changes to update it.");
   };
-    const nav = [{name:"Billing",icon:LayoutDashboard},{name:"Bill History",icon:ClipboardList},{name:"Reports",icon:BarChart3},{name:"Menu",icon:UtensilsCrossed},{name:"Settings",icon:Settings}];
+    const nav = [{name:"Billing",icon:LayoutDashboard},{name:"Menu",icon:UtensilsCrossed},{name:"Bill History",icon:ClipboardList},{name:"Reports",icon:BarChart3},{name:"Settings",icon:Settings}];
   if (authLoading) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><section className="auth-card"><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>MoryaBilling</h1><p>Checking secure sign-in…</p></section></main>;
   if (!supabase) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><section className="auth-card"><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>MoryaBilling</h1><p>Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel to continue.</p></section></main>;
   if (!session) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><form className="auth-card" onSubmit={async e=>{e.preventDefault();setAuthError("");const {error}=await supabase.auth.signInWithPassword({email:authEmail,password:authPassword});if(error)setAuthError(error.message);}}><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>Morya<span className="orange">Billing</span></h1><p>Sign in to manage restaurant bills and saved orders.</p>{authError && <div className="notice">{authError}</div>}<label>Email address<input type="email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} autoComplete="username" required/></label><label>Password<input type="password" value={authPassword} onChange={e=>setAuthPassword(e.target.value)} autoComplete="current-password" required/></label><button className="checkout-btn" type="submit">Sign in <span>→</span></button><small>Create the owner account in Supabase Authentication first. Public sign-ups are not enabled here.</small></form></main>;
@@ -218,7 +218,7 @@ export default function Home() {
         </button>; })}</div>
       </section>}
       {active === "Billing" && showTableOrderModal && <div className="table-order-backdrop" onClick={() => setShowTableOrderModal(false)}><section className="table-order-modal" onClick={e => e.stopPropagation()}>
-        <header className="table-order-header"><div><span className="eyebrow">DINE-IN ORDER</span><h2>Table {table}</h2><p>{tableInfo(table).occupied ? "Occupied · " + elapsed(tableInfo(table).started) : "New table order"} · {cart.reduce((s,i)=>s+i.qty,0)} items</p></div><button className="icon-btn" onClick={() => setShowTableOrderModal(false)} aria-label="Close table order"><X size={19}/></button></header>
+        <header className="table-order-header"><div><span className="eyebrow">DINE-IN ORDER</span><h2>Table {table}</h2><p>{tableInfo(table).occupied ? "Occupied · " + elapsed(tableInfo(table).started) : "New table order"} · {cart.reduce((s,i)=>s+i.qty,0)} items</p></div><div className="table-order-header-actions">{cart.length>0 && <button className="primary-small mobile-preview-action" onClick={()=>setShowCheckout(true)}>Order preview · {money(total)}</button>}<button className="icon-btn" onClick={() => setShowTableOrderModal(false)} aria-label="Close table order"><X size={19}/></button></div></header>
         <div className="billing-layout table-order-layout">
           <div className="menu-area">
             <div className="search-box"><Search size={17}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search menu items…"/>{search && <button onClick={()=>setSearch("")}><X size={15}/></button>}<kbd>⌕</kbd></div>
