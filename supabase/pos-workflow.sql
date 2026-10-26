@@ -50,6 +50,47 @@ on conflict (id) do nothing;
 insert into public.pos_restaurant_tables (name) values
 ('A1'),('A2'),('A3'),('A4'),('A5'),('B1'),('B2'),('B3'),('B4'),('B5'),('C1'),('C2'),('C3')
 on conflict (name) do nothing;
+-- Copy legacy bills into the new UI's history table when the original schema exists.
+-- This is additive: the original bills and bill_items records are not modified or deleted.
+do $migration$
+begin
+  if to_regclass('public.bills') is not null and to_regclass('public.bill_items') is not null then
+    execute $copy$
+      insert into public.pos_bills
+        (id, table_name, items, subtotal, discount, total, payment, status, created_at, updated_at)
+      select
+        b.id::text,
+        coalesce(nullif(b.table_label, ''), 'Historical'),
+        coalesce((
+          select jsonb_agg(
+            jsonb_build_object(
+              'id', line.line_no,
+              'name', line.item_name,
+              'category', 'Historical',
+              'price', line.unit_price,
+              'qty', line.quantity
+            ) order by line.line_no
+          )
+          from (
+            select bi.item_name, bi.unit_price, bi.quantity,
+                   row_number() over (order by bi.created_at, bi.id)::integer as line_no
+            from public.bill_items bi where bi.bill_id = b.id
+          ) line
+        ), '[]'::jsonb),
+        b.subtotal,
+        b.discount_amount,
+        b.total_amount,
+        b.payment_method,
+        case when b.status = 'paid' then 'Paid' else b.status end,
+        b.created_at,
+        b.updated_at
+      from public.bills b
+      on conflict (id) do nothing
+    $copy$;
+  end if;
+end
+$migration$;
+
 alter table public.pos_menu_items enable row level security;
 alter table public.pos_restaurant_tables enable row level security;
 alter table public.pos_restaurant_settings enable row level security;
