@@ -236,7 +236,7 @@ export default function Home() {
         <div className="section-title"><div><h2>Table dashboard</h2><p>Open any table to create or continue its dine-in order.</p></div><span className="count-pill">{tableNames.length} tables</span></div>
         <div className="table-status-legend"><span><i className="available-dot"/> Available</span><span><i className="occupied-dot"/> Occupied</span></div>
         <div className="table-card-grid">{tableNames.map(name => { const info = tableInfo(name); return <button type="button" key={name} className={`table-dashboard-card ${info.occupied ? "table-occupied" : "table-available"}` } onClick={() => void openTable(name)}>
-          <div className="table-card-top"><strong>{name}</strong><span className={info.occupied ? "table-state occupied-state" : isPaid ? "table-state paid-state" : "table-state available-state"}>{info.occupied ? "Occupied" : "Available"}</span></div>
+          <div className="table-card-top"><strong>{name}</strong><span className={info.occupied ? "table-state occupied-state" : "table-state available-state"}>{info.occupied ? "Occupied" : "Available"}</span></div>
           <div className="table-card-total">{info.occupied ? money(info.total) : "Ready for guests"}</div>
           <div className="table-card-bottom"><span>{info.occupied ? info.items.reduce((sum,item)=>sum+item.qty,0)+" items" : "No active order"}</span>{info.occupied && <span className="table-elapsed"><Clock3 size={13}/>{elapsed(info.started)}</span>}</div>
           <span className="table-card-action">{info.occupied ? "Continue order →" : "Open table →"}</span>
