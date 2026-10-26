@@ -156,3 +156,9 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .menu-qty-control button{width:25px;height:25px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);font-size:17px;line-height:1}
 .menu-qty-control span{min-width:16px;text-align:center;font-size:11px;font-weight:800;color:var(--text)}
 @media(max-width:800px){.menu-card-wrap .menu-card{padding-right:10px}.menu-qty-control{top:48px;right:7px;gap:3px;padding:3px}.menu-qty-control button{width:24px;height:24px}}
+
+
+/* Mobile order preview and navigation refinements */
+.table-order-header-actions{display:flex;align-items:center;gap:9px;flex-shrink:0}.mobile-preview-action{display:none!important}
+@media(max-width:800px){.mobile-preview-action{display:inline-flex!important;align-items:center;justify-content:center;white-space:nowrap;padding:10px 12px!important;min-height:40px}.table-order-header-actions .icon-btn{flex-shrink:0}.table-order-layout .menu-area{padding-bottom:78px}.table-order-layout .mobile-cart{bottom:10px;z-index:25}.table-order-layout .menu-grid{scroll-margin-top:90px}.table-order-layout .categories{position:sticky;top:69px;z-index:2;background:var(--bg);padding:7px 0;overflow-x:auto;flex-wrap:nowrap}.table-order-layout .categories .category{flex:0 0 auto}.table-order-layout .menu-card-wrap .menu-card{min-height:150px}.table-order-layout .menu-qty-control{top:49px}.table-order-modal .cart-panel{display:none!important}}
+@media(max-width:420px){.table-order-header h2{font-size:19px}.mobile-preview-action{font-size:11px;padding:9px 8px!important}.table-order-header-actions{gap:5px}}
