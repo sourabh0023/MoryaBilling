@@ -146,3 +146,13 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .app.light .table-card-grid>.table-dashboard-card{box-shadow:0 5px 18px #1018280b!important}
 @media(max-width:800px){.app .tables-dashboard{padding:18px 0 28px}.app .table-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.app .table-card-grid>.table-dashboard-card{min-height:178px!important;padding:13px!important;gap:13px!important}.app .table-dashboard-card .table-card-top{align-items:flex-start!important;flex-wrap:wrap!important}.app .table-dashboard-card .table-card-top>strong{font-size:17px!important}.app .table-dashboard-card .table-card-total{font-size:16px!important}.app .table-dashboard-card .table-card-bottom{align-items:flex-start!important;flex-direction:column!important}}
 @media(max-width:380px){.app .table-card-grid{grid-template-columns:1fr 1fr!important}.app .table-dashboard-card .table-state{font-size:9px!important;padding:5px 7px!important}}
+
+/* Product-level quantity controls for quick mobile order edits */
+.menu-card-wrap{position:relative}
+.menu-card-wrap .menu-card{padding-right:72px}
+.menu-card-wrap .menu-card-top{align-items:flex-start}
+.menu-card-wrap .added-qty{font-size:10px;font-weight:800;color:var(--orange);white-space:nowrap;padding-top:4px}
+.menu-qty-control{position:absolute;top:50px;right:10px;z-index:3;display:flex;align-items:center;gap:5px;padding:4px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);box-shadow:0 3px 10px #0002}
+.menu-qty-control button{width:25px;height:25px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);font-size:17px;line-height:1}
+.menu-qty-control span{min-width:16px;text-align:center;font-size:11px;font-weight:800;color:var(--text)}
+@media(max-width:800px){.menu-card-wrap .menu-card{padding-right:10px}.menu-qty-control{top:48px;right:7px;gap:3px;padding:3px}.menu-qty-control button{width:24px;height:24px}}
