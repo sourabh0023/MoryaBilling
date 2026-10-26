@@ -81,3 +81,6 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .favorite-star.is-favorite{background:rgba(245,173,36,.12);border-color:rgba(245,173,36,.45)}
 .favorite-category{display:inline-flex;align-items:center;gap:6px}
 .favorite-table-star{display:inline-flex;align-items:center;justify-content:center}
+
+/* Hide menu cards until a dine-in table has been selected. */
+.menu-grid.hidden{display:none}
