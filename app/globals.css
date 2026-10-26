@@ -384,3 +384,93 @@ button:disabled{opacity:.42;cursor:not-allowed}
     position:relative !important; z-index:10 !important;
   }
 }
+
+
+/* Revert the experimental iOS-style mobile navigation and restore the standard web header */
+@media screen and (max-width: 800px) {
+  .app > .sidebar {
+    display:block !important;
+    position:relative !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    padding:12px 15px !important;
+    overflow:visible !important;
+  }
+  .app > .sidebar > .brand {
+    display:flex !important;
+    position:relative !important;
+    inset:auto !important;
+    transform:none !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:64px !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    padding:4px 3px 12px !important;
+    margin:0 !important;
+    overflow:visible !important;
+    background:transparent !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+  .app > .sidebar > .brand .brand-identity {
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    gap:10px !important;
+  }
+  .app > .sidebar > .brand .brand-mark {
+    display:flex !important;
+    flex:0 0 44px !important;
+    width:44px !important;
+    height:44px !important;
+  }
+  .app > .sidebar > .brand .brand-identity strong { display:block !important; font-size:20px !important; }
+  .app > .sidebar > .brand .brand-identity small { display:block !important; font-size:9px !important; }
+  .app > .sidebar > .brand > .install-app-btn,
+  .app > .sidebar > .brand > .install-status {
+    display:inline-flex !important;
+    position:relative !important;
+    inset:auto !important;
+    flex:0 0 42px !important;
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+    margin-left:10px !important;
+    z-index:5 !important;
+    visibility:visible !important;
+    opacity:1 !important;
+  }
+  .app > .sidebar > nav {
+    position:relative !important;
+    inset:auto !important;
+    display:flex !important;
+    width:100% !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    gap:5px !important;
+    padding:0 0 8px !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    z-index:1 !important;
+  }
+  .app > .sidebar > nav .nav-item {
+    position:relative !important;
+    flex:0 0 auto !important;
+    display:flex !important;
+    flex-direction:row !important;
+    min-height:44px !important;
+    gap:7px !important;
+    padding:9px 11px !important;
+    font-size:12px !important;
+    border-radius:12px !important;
+  }
+  .app > .sidebar > nav .nav-item svg { width:17px !important; height:17px !important; }
+}
