@@ -70,6 +70,7 @@ export default function Home() {
   const [bills, setBills] = useState<Bill[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [historyEditing, setHistoryEditing] = useState(false);
+   const draftSavingPausedRef = useRef(false);
   const [showMobileCart, setShowMobileCart] = useState(false);
   const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.qty, 0), [cart]);
   useEffect(() => { const timer = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(timer); }, []);
@@ -127,7 +128,7 @@ export default function Home() {
     return () => { cancelled = true; };
   }, [supabase, session, authLoading]);
   useEffect(() => {
-    if (!supabase || !dbReady || draftLoading || historyEditing || table === "—") return;
+    if (!supabase || !dbReady || draftLoading || historyEditing || draftSavingPausedRef.current || table === "—") return;
     const timer = window.setTimeout(async () => {
       const result = cart.length
         ? await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" })
@@ -241,7 +242,7 @@ export default function Home() {
     const originalBill = editingBillId ? bills.find(b => b.id === editingBillId) : undefined;
     const saved: Bill = { id: billId, date: originalBill?.date ?? new Date(now).toLocaleString("en-IN"), createdAt: originalBill?.createdAt ?? now, items: cart.map(i => ({ ...i })), total, payment, status: "Paid", table };
     setBills(old => editingBillId ? old.map(b => b.id === billId ? saved : b) : [saved, ...old]);
-    setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setShowTableOrderModal(false); setHistoryEditing(false); setActiveOrders(old => old.filter(o => o.table_name !== table));
+    setCart([]); setEditingBillId(null); setShowCheckout(false); setShowMobileCart(false); setShowTableOrderModal(false); setHistoryEditing(false); draftSavingPausedRef.current = false; setActiveOrders(old => old.filter(o => o.table_name !== table));
     setNotice(draftDelete.error ? "Bill saved, but its draft could not be cleared: " + draftDelete.error.message : "Bill " + billId + " saved. Table " + table + " is now available.");
     if (printAfterSave && printWindow) printReceipt(saved, printWindow);
     savingRef.current = false;
