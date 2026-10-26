@@ -24,3 +24,23 @@ button:disabled{opacity:.42;cursor:not-allowed}
 @media(max-width:1150px){.sidebar{width:205px;flex-basis:205px}.main-panel{padding:0 20px}.billing-layout{grid-template-columns:minmax(0,1fr) 315px;gap:15px}.menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:800px){.app{display:block;padding-bottom:68px}.sidebar{position:relative;width:100%;height:auto;min-height:0;padding:13px 15px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 3px 12px}.brand-mark{width:36px;height:36px}.brand strong{font-size:16px}.sidebar nav{display:flex;overflow:auto;gap:5px}.nav-item{flex:0 0 auto;padding:9px 10px;font-size:11px;gap:7px}.nav-item svg{width:15px}.branch-label,.sidebar-bottom{display:none}.main-panel{padding:0 14px}.topbar{min-height:83px}.topbar h1{font-size:21px}.top-actions{gap:8px}.today{font-size:10px}.avatar{display:none}.billing-layout{display:flex;flex-direction:column;padding-top:15px}.menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.menu-card{min-height:133px;padding:11px}.cart-panel{position:static;max-height:none;min-height:0}.cart-items{max-height:300px}.cart-empty{min-height:135px}.mobile-cart{position:fixed;z-index:5;bottom:10px;left:10px;right:10px;display:flex;align-items:center;gap:9px;background:var(--orange);color:#fff;border:0;border-radius:12px;padding:14px 15px;box-shadow:0 6px 24px #0004;font-size:12px;font-weight:700}.mobile-cart span{margin-left:auto}.report-cards{grid-template-columns:1fr}.content-card{padding:16px;margin:16px 0}.section-title{align-items:flex-start}.footer{padding-bottom:12px}.cart-panel{display:none}.billing-layout:has(.cart-panel) .cart-panel{display:flex}.billing-layout:has(.cart-panel) .cart-panel{display:none}.billing-layout:has(.cart-panel) .cart-panel:has(.cart-row){display:flex}.billing-layout:has(.cart-panel) .cart-panel:has(.cart-empty){display:none}.app:has(.mobile-cart) .cart-panel{display:none}.app:has(.mobile-cart) .cart-panel:has(.cart-row){display:none}.order-toolbar{flex-wrap:wrap}.checkout-modal{padding:22px}}
 @media print{.sidebar,.topbar,.menu-area,.footer,.cart-head,.order-meta,.totals,.checkout-btn,.print-btn,.mobile-cart,.notice{display:none!important}.app,.main-panel{background:white;color:black;display:block;padding:0}.billing-layout{display:block;padding:0}.cart-panel{display:block!important;position:static;max-height:none;border:0;color:black;background:white}.cart-row,.cart-item-info strong,.cart-row>b{color:black}.cart-panel:before{content:"MORYA MISAL · BILL";display:block;font-size:20px;font-weight:bold;margin-bottom:20px}.cart-footnote{color:#444}}
+
+/* Mobile order drawer and table settings */
+.mobile-order-backdrop{display:none}
+.table-settings{border-top:1px solid var(--line);margin-top:20px;padding-top:18px}
+.table-settings h3{font:800 15px Manrope,sans-serif;margin:0}
+.table-settings p{font-size:12px;color:var(--muted);margin:6px 0 14px}
+.add-table-row{display:flex;gap:9px;max-width:520px;margin-bottom:12px}
+.add-table-row input{flex:1;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:10px 12px;font-size:12px}
+.table-name-list{max-width:620px}
+.table-name-list>div{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}
+.table-name-list>div>span{flex:1;font-size:12px;font-weight:600}
+.danger-text{color:#f87171}
+@media(max-width:800px){
+.mobile-order-backdrop{display:flex;position:fixed;inset:0;z-index:9;background:#0009;align-items:flex-end;padding:0}
+.mobile-order-sheet{width:100%;max-height:84vh;overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:18px 16px 22px;box-shadow:0 -12px 40px #0003}
+.mobile-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.mobile-sheet-head h2{font:800 18px Manrope,sans-serif;margin:5px 0 0}
+.mobile-sheet-items{max-height:42vh;overflow:auto}
+.mobile-order-sheet .totals{margin-top:10px}
+}
