@@ -73,17 +73,24 @@ export default function Home() {
   const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.qty, 0), [cart]);
   useEffect(() => { const timer = window.setInterval(() => setClockNow(Date.now()), 1000); return () => window.clearInterval(timer); }, []);
   useEffect(() => {
-    if (!showTableOrderModal) return;
-    const marker = { moryaTableOrderModal: true };
-    window.history.pushState(marker, "", window.location.href);
-    const onBack = () => { setShowTableOrderModal(false); setShowCheckout(false); setShowMobileCart(false); setHistoryEditing(false); };
+    // Keep Android/iOS browser Back inside the app instead of leaving the POS.
+    window.history.pushState({ moryaBillingApp: true }, "", window.location.href);
+    const onBack = () => {
+      setActive("Billing");
+      setShowTableOrderModal(false);
+      setShowCheckout(false);
+      setShowMobileCart(false);
+      setHistoryEditing(false);
+      setShowAddMenuItem(false);
+      setEditingMenuItem(null);
+      // Add the in-app history entry again so another Back press also stays in MoryaBilling.
+      window.history.pushState({ moryaBillingApp: true }, "", window.location.href);
+    };
     window.addEventListener("popstate", onBack);
     return () => window.removeEventListener("popstate", onBack);
-  }, [showTableOrderModal]);
+  }, []);
   const closeTableOrderModal = () => {
-    setShowCheckout(false); setShowMobileCart(false); setHistoryEditing(false);
-    if (window.history.state?.moryaTableOrderModal) window.history.back();
-    else setShowTableOrderModal(false);
+    setShowCheckout(false); setShowMobileCart(false); setHistoryEditing(false); setShowTableOrderModal(false);
   };
   useEffect(() => {
     if (!supabase) { setAuthLoading(false); return; }
