@@ -42,6 +42,7 @@ export default function Home() {
   const [menuItems, setMenuItems] = useState<Product[]>(initialMenu);
   const [editingMenuItem, setEditingMenuItem] = useState<number | null>(null);
   const [showAddMenuItem, setShowAddMenuItem] = useState(false);
+  const [menuAdminCategory, setMenuAdminCategory] = useState("Favorites");
   const [menuForm, setMenuForm] = useState({name:"", category:"Misal", price:""});
   const [search, setSearch] = useState("");
   const [table, setTable] = useState("—");
@@ -246,13 +247,18 @@ export default function Home() {
       {active === "Menu" && <section className="content-card menu-management">
         <div className="section-title"><div><h2>Menu</h2><p>Manage dishes, prices and favourites.</p></div><span className="count-pill">{menuItems.length} items</span></div>
         <div className="menu-add-toolbar"><p>Organised by food type</p><button className="primary-small" type="button" onClick={()=>{setEditingMenuItem(null);setMenuForm({name:"",category:"Misal",price:""});setShowAddMenuItem(true);}}><Plus size={16}/> Add new item</button></div>
+        <div className="menu-admin-category-tabs" role="tablist" aria-label="Filter menu by food category">
+          <button type="button" role="tab" aria-selected={menuAdminCategory==="Favorites"} className={"menu-admin-category-tab menu-admin-favorites-tab"+(menuAdminCategory==="Favorites"?" active":"")} onClick={()=>setMenuAdminCategory("Favorites")}><Star size={16} fill="currentColor"/> Favorites ({favoriteIds.length})</button>
+          <button type="button" role="tab" aria-selected={menuAdminCategory==="All"} className={"menu-admin-category-tab"+(menuAdminCategory==="All"?" active":"")} onClick={()=>setMenuAdminCategory("All")}>All</button>
+          {categories.filter(cat=>cat!=="All").map(cat=><button type="button" role="tab" aria-selected={menuAdminCategory===cat} key={cat} className={"menu-admin-category-tab"+(menuAdminCategory===cat?" active":"")} onClick={()=>setMenuAdminCategory(cat)}>{cat}</button>)}
+        </div>
         <div className="menu-admin-categories">
-          {categories.filter(cat=>cat!=="All").map(cat=>{const products=menuItems.filter(p=>(cat==="Pav Bhaji" ? p.category==="Pav Bhaji" || p.name.toLowerCase().includes("pav bhaji") : p.category===cat));return products.length ? <section className="menu-category-section" key={cat}><header><h3>{cat}</h3><span>{products.length} items</span></header><div className="menu-admin-list">{products.map(p=><article className="menu-admin-row" key={p.id}>
+          {(() => { const products=menuItems.filter(p => menuAdminCategory==="Favorites" ? favoriteIds.includes(p.id) : menuAdminCategory==="All" ? true : menuAdminCategory==="Pav Bhaji" ? p.category==="Pav Bhaji" || p.name.toLowerCase().includes("pav bhaji") : p.category===menuAdminCategory); return products.length ? <section className="menu-category-section"><header><h3>{menuAdminCategory==="Favorites"?"Favourite items":menuAdminCategory==="All"?"All menu items":menuAdminCategory}</h3><span>{products.length} items</span></header><div className="menu-admin-list">{products.map(p=><article className="menu-admin-row" key={p.id}>
             <div className="menu-admin-icon"><UtensilsCrossed size={19}/></div>
             <div className="menu-admin-info"><strong>{p.name}</strong><span>{p.category}</span><b>{money(p.price)}</b></div>
             <div className="menu-admin-actions"><button type="button" className={"menu-admin-favorite"+(favoriteIds.includes(p.id)?" is-favorite":"")} aria-label={favoriteIds.includes(p.id)?"Remove favorite":"Mark favorite"} onClick={()=>toggleFavorite(p.id)}><Star size={19} fill={favoriteIds.includes(p.id)?"currentColor":"none"}/></button><button type="button" className="menu-admin-edit" onClick={()=>{setShowAddMenuItem(false);setEditingMenuItem(p.id);setMenuForm({name:p.name,category:p.category,price:String(p.price)});}}>Edit</button></div>
             <div className="menu-admin-sales"><strong>{salesForMenuItem(p.id)} sold</strong>{salesForMenuItem(p.id)>0 && salesByItem[0]?.id===p.id && <span className="best-seller-badge"><Star size={10} fill="currentColor"/> Best seller</span>}</div>
-          </article>)}</div></section> : null;})}
+          </article>)}</div></section> : <div className="menu-admin-empty">{menuAdminCategory==="Favorites"?"No favourite items yet. Tap a star on any item to add it here.":"No items in this category yet. Add an item and choose this category."}</div>; })()}
         </div>
         {(editingMenuItem !== null || showAddMenuItem) && <div className="menu-editor-backdrop" onClick={()=>{setEditingMenuItem(null);setShowAddMenuItem(false);setMenuForm({name:"",category:"Misal",price:""});}}><section className="menu-editor-modal" onClick={e=>e.stopPropagation()}>
           <header className="menu-editor-modal-head"><div className="menu-editor-modal-icon"><UtensilsCrossed size={21}/></div><div><span className="eyebrow">MENU MANAGEMENT</span><h2>{editingMenuItem!==null?"Edit item":"Add new item"}</h2></div><button type="button" className="icon-btn" onClick={()=>{setEditingMenuItem(null);setShowAddMenuItem(false);setMenuForm({name:"",category:"Misal",price:""});}} aria-label="Close menu form"><X size={18}/></button></header>
