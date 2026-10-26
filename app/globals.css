@@ -44,3 +44,13 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .mobile-sheet-items{max-height:42vh;overflow:auto}
 .mobile-order-sheet .totals{margin-top:10px}
 }
+
+.install-app-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 12px;border:1px solid #f47b2070;border-radius:10px;background:#f47b2017;color:var(--orange);font-size:11px;font-weight:700;white-space:nowrap}
+.install-app-btn:hover{background:#f47b2028}
+.install-status{display:inline-flex;align-items:center;gap:6px;color:#35c98a;font-size:11px;font-weight:700;white-space:nowrap}
+.install-help{position:fixed;z-index:30;top:80px;right:22px;width:min(340px,calc(100vw - 28px));padding:19px;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:14px;box-shadow:0 15px 50px #0005}
+.install-help-title{display:flex;align-items:center;gap:9px;font-weight:800;font-family:Manrope,sans-serif}
+.install-help p{font-size:12px;line-height:1.7;color:var(--muted);padding-right:6px}
+.install-help-close{position:absolute;right:11px;top:10px;background:transparent;border:0;color:var(--muted);font-size:23px}
+.install-help-done{border:0;border-radius:8px;background:var(--orange);color:white;font-size:12px;font-weight:700;padding:9px 15px}
+@media(max-width:800px){.top-actions{flex-wrap:wrap;justify-content:flex-end}.install-app-btn{padding:8px 9px}.install-app-btn span{display:inline}}
