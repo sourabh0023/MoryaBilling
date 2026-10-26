@@ -127,7 +127,7 @@ export default function Home() {
     return () => { cancelled = true; };
   }, [supabase, session, authLoading]);
   useEffect(() => {
-    if (!supabase || !dbReady || draftLoading || table === "—") return;
+    if (!supabase || !dbReady || draftLoading || historyEditing || table === "—") return;
     const timer = window.setTimeout(async () => {
       const result = cart.length
         ? await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" })
@@ -137,7 +137,7 @@ export default function Home() {
       else setActiveOrders(old => old.filter(o => o.table_name !== table));
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [cart, table, dbReady, draftLoading, supabase]);
+  }, [cart, table, dbReady, draftLoading, historyEditing, supabase]);
   const selectTable = async (nextTable: string) => {
     if (!nextTable || nextTable === "—") return;
     const loadingStartedAt = Date.now();
@@ -248,8 +248,11 @@ export default function Home() {
     setSaving(false);
   };
   const startEdit = (b: Bill) => {
-    setEditingBillId(b.id); setTable(b.table); setCart(b.items.map(i=>({...i}))); setPayment(b.payment === "Not recorded" ? "Cash" : b.payment); setHistoryEditing(true); setShowTableOrderModal(true); setNotice("");
-  };
+     // Saved bills are history, not active dine-in orders. Remove any stale table draft before editing.
+     setActiveOrders(old => old.filter(o => o.table_name !== b.table));
+     if (supabase) void supabase.from("pos_active_orders").delete().eq("table_name", b.table).then(({ error }) => { if (error) setNotice("Bill opened for editing, but the old table draft could not be cleared: " + error.message); });
+     setEditingBillId(b.id); setTable(b.table); setCart(b.items.map(i=>({...i}))); setPayment(b.payment === "Not recorded" ? "Cash" : b.payment); setHistoryEditing(true); setShowTableOrderModal(true); setNotice("");
+   };
     const nav = [{name:"Billing",icon:LayoutDashboard},{name:"Menu",icon:UtensilsCrossed},{name:"Bill History",icon:ClipboardList},{name:"Reports",icon:BarChart3},{name:"Settings",icon:Settings}];
   if (authLoading) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><section className="auth-card"><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>MoryaBilling</h1><p>Checking secure sign-in…</p></section></main>;
   if (!supabase) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><section className="auth-card"><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>MoryaBilling</h1><p>Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel to continue.</p></section></main>;
