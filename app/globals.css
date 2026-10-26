@@ -221,3 +221,8 @@ button:disabled{opacity:.42;cursor:not-allowed}
  .restaurant-settings,.menu-editor-form{gap:15px}.restaurant-settings input,.menu-editor-form input,.menu-editor-form select{min-height:52px;border-radius:15px!important}.report-card,.summary-list>div{border-radius:15px}.table-action{padding:9px 12px;border-radius:12px!important}
 }
 @media(prefers-reduced-motion:reduce){.app *,.app *::before,.app *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+
+/* Keep the table-order sheet above the sticky mobile navigation */
+.table-order-backdrop{z-index:120!important;isolation:isolate}.table-order-modal{position:relative;z-index:121}.modal-backdrop{z-index:140!important}
+@media(max-width:800px){.table-order-backdrop{z-index:120!important;inset:0!important;display:flex!important;align-items:stretch!important;padding:0!important;background:rgba(0,0,0,.72)!important}.table-order-modal{z-index:121;width:100%!important;height:100dvh!important;max-height:100dvh!important;overflow-y:auto!important;border-radius:0!important;padding:0 14px calc(18px + env(safe-area-inset-bottom))!important}.table-order-header{position:sticky;top:0;z-index:5;padding:calc(14px + env(safe-area-inset-top)) 0 14px!important}.table-order-layout{display:flex!important;flex-direction:column!important}.table-order-layout .cart-panel{position:relative!important;top:auto!important;max-height:none!important}.table-order-layout.is-loading-draft{opacity:1!important;pointer-events:auto!important}.table-order-layout.is-loading-draft .menu-area{opacity:.55;pointer-events:none}}
