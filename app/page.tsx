@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BarChart3, ClipboardList, Clock3, LayoutDashboard, Menu as MenuIcon, Moon, Plus, Printer, Search, Settings, Sun, UtensilsCrossed, X, ReceiptText, CalendarDays } from "lucide-react";
+import { BarChart3, ClipboardList, Clock3, LayoutDashboard, Moon, Plus, Printer, Search, Settings, Sun, UtensilsCrossed, X, ReceiptText, CalendarDays } from "lucide-react";
+import InstallButton from "./install-button";
 
 type Product = { id: number; name: string; category: string; price: number };
 type CartItem = Product & { qty: number };
@@ -87,7 +88,7 @@ export default function Home() {
       <div className="sidebar-bottom"><div className="status-dot"/> <span>POS ready</span><span className="version">v0.1</span></div>
     </aside>
     <section className="main-panel">
-      <header className="topbar"><div><div className="eyebrow">MORYA MISAL · WORKSPACE</div><h1>{active === "Billing" ? "Create a bill" : active}</h1></div><div className="top-actions"><span className="today"><Clock3 size={15}/>{new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})}</span><button className="icon-btn" aria-label="Toggle theme" onClick={() => setDark(!dark)}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</button><div className="avatar">M</div></div></header>
+      <header className="topbar"><div><div className="eyebrow">MORYA MISAL · WORKSPACE</div><h1>{active === "Billing" ? "Create a bill" : active}</h1></div><div className="top-actions"><InstallButton/><span className="today"><Clock3 size={15}/>{new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})}</span><button className="icon-btn" aria-label="Toggle theme" onClick={() => setDark(!dark)}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</button><div className="avatar">M</div></div></header>
       {notice && <div className="notice"><span>{notice}</span><button onClick={() => setNotice("")}><X size={16}/></button></div>}
       {active === "Billing" && <div className="billing-layout">
         <div className="menu-area">
