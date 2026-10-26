@@ -120,6 +120,7 @@ export default function Home() {
     if (supabase && table !== "—" && cart.length) {
       const previousSave = await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, updated_at: new Date().toISOString() }, { onConflict: "table_name" });
       if (previousSave.error) setNotice("Could not preserve the order for " + table + ": " + previousSave.error.message);
+      else setActiveOrders(old => { const found = old.find(o => o.table_name === table); return [...old.filter(o => o.table_name !== table), { table_name: table, items: cart.map(i => ({ ...i })), created_at: found?.created_at ?? new Date().toISOString() }]; });
     }
     setTable(nextTable);
     if (supabase) {
@@ -127,7 +128,7 @@ export default function Home() {
       if (error) setNotice("Could not load the draft for " + nextTable + ": " + error.message);
       const draftItems = (data?.items as CartItem[] | undefined) ?? [];
       if (data) { setCart(draftItems); setEditingBillId(null); }
-      else { const unpaid = bills.find(b => b.table === nextTable && b.status !== "Paid"); setCart(unpaid?.items.map(i => ({ ...i })) ?? []); setEditingBillId(unpaid?.id ?? null); }
+      else { const unpaid = bills.find(b => b.table === nextTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled"); setCart(unpaid?.items.map(i => ({ ...i })) ?? []); setEditingBillId(unpaid?.id ?? null); }
       setActiveOrders(old => data ? [...old.filter(o => o.table_name !== nextTable), { table_name: nextTable, items: draftItems, created_at: old.find(o => o.table_name === nextTable)?.created_at ?? new Date().toISOString() }] : old.filter(o => o.table_name !== nextTable));
     } else { setCart([]); setEditingBillId(null); }
     setDraftLoading(false);
@@ -141,11 +142,12 @@ export default function Home() {
     const draftResult = await supabase.from("pos_active_orders").delete().eq("table_name", bill.table);
     if (draftResult.error) setNotice("Payment recorded, but the draft could not be cleared: " + draftResult.error.message);
     setActiveOrders(old => old.filter(o => o.table_name !== bill.table));
+    if (table === bill.table) { setCart([]); setEditingBillId(null); setShowTableOrderModal(false); }
     setBills(old => old.map(b => b.id === bill.id ? { ...b, status: "Paid", payment } : b));
     setNotice(`Bill ${bill.id} marked paid. Table ${bill.table} is now available.`);
   };
   const elapsed = (start?: string) => { if (!start) return "00:00:00"; const seconds = Math.max(0, Math.floor((clockNow - new Date(start).getTime()) / 1000)); return [Math.floor(seconds / 3600), Math.floor((seconds % 3600) / 60), seconds % 60].map(n => String(n).padStart(2, "0")).join(":"); };
-  const tableInfo = (name: string) => { const draft = activeOrders.find(o => o.table_name === name && o.items.length > 0); const unpaid = bills.find(b => b.table === name && b.status !== "Paid"); const items = draft?.items ?? unpaid?.items ?? []; const started = draft?.created_at ?? unpaid?.createdAt; return { occupied: items.length > 0, items, total: items.reduce((sum, item) => sum + item.price * item.qty, 0) || unpaid?.total || 0, started }; };
+  const tableInfo = (name: string) => { const draft = activeOrders.find(o => o.table_name === name && o.items.length > 0); const unpaid = bills.find(b => b.table === name && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled"); const items = draft?.items ?? unpaid?.items ?? []; const started = draft?.created_at ?? unpaid?.createdAt; return { occupied: items.length > 0, items, total: items.reduce((sum, item) => sum + item.price * item.qty, 0) || unpaid?.total || 0, started }; };
   const filtered = menuItems.filter(p => (!favoritesOnly || favoriteIds.includes(p.id)) && (category === "All" || p.category === category) && p.name.toLowerCase().includes(search.toLowerCase()));
   const toggleFavorite = (id:number) => { const next = !favoriteIds.includes(id); setFavoriteIds(old => next ? [...old,id] : old.filter(x=>x!==id)); if (supabase) void supabase.from("pos_menu_items").update({ is_favorite: next }).eq("id", id).then(({ error }) => { if (error) setNotice("Could not save favorite: " + error.message); }); };
   const add = (p: Product) => { if (table === "—") { setNotice("Select a table before adding menu items."); return; } setCart(old => { const found = old.find(i => i.id === p.id); return found ? old.map(i => i.id === p.id ? { ...i, qty: i.qty + 1 } : i) : [...old, { ...p, qty: 1 }]; }); };
