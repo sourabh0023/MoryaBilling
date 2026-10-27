@@ -474,3 +474,14 @@ button:disabled{opacity:.42;cursor:not-allowed}
   }
   .app > .sidebar > nav .nav-item svg { width:17px !important; height:17px !important; }
 }
+
+
+/* Prevent the install-to-phone icon from overlapping the MoryaBilling wordmark in landscape */
+.brand{width:100%;min-width:0;gap:12px;box-sizing:border-box}
+.brand-identity{flex:1 1 auto;min-width:0;gap:10px}
+.brand-identity>div:last-child{min-width:0;flex:1 1 auto}
+.brand-identity strong{white-space:nowrap;font-size:clamp(15px,1.6vw,19px);letter-spacing:-.5px}
+.brand-identity small{white-space:nowrap;letter-spacing:clamp(.7px,.12vw,1.65px)}
+.brand>.install-app-btn,.brand>.install-status{position:relative!important;inset:auto!important;flex:0 0 42px!important;width:42px!important;height:42px!important;min-width:42px!important;margin-left:0!important;z-index:5}
+@media(max-width:800px){.brand{gap:10px!important}.brand-identity{flex:1 1 0!important;min-width:0!important}.brand-identity strong{font-size:clamp(15px,4.5vw,20px)!important}.brand>.install-app-btn,.brand>.install-status{flex-basis:40px!important;width:40px!important;height:40px!important;min-width:40px!important}}
+@media(orientation:landscape) and (max-height:600px){.sidebar{padding-left:12px!important;padding-right:12px!important}.brand{gap:8px!important;padding-left:2px!important;padding-right:2px!important}.brand-mark{flex:0 0 38px!important;width:38px!important;height:38px!important}.brand-identity{gap:8px!important}.brand-identity strong{font-size:clamp(14px,1.7vw,18px)!important}.brand-identity small{font-size:8px!important;letter-spacing:.8px!important}.brand>.install-app-btn,.brand>.install-status{flex-basis:36px!important;width:36px!important;height:36px!important;min-width:36px!important}}
