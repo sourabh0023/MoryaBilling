@@ -503,3 +503,11 @@ button:disabled{opacity:.42;cursor:not-allowed}
 /* Compact, consistently aligned count badges without redundant page headings */
 .section-count-row{display:flex;align-items:center;justify-content:flex-end;width:100%;min-height:32px;margin:0 0 12px;padding:0;box-sizing:border-box}
 .section-count-row .count-pill{margin-left:auto;white-space:nowrap}
+
+
+/* Professional menu toolbar: item count and Add New Item grouped at the top right */
+.menu-management .menu-add-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 20px;min-height:44px}
+.menu-management .menu-toolbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-left:auto;flex:0 0 auto}
+.menu-management .menu-toolbar-actions .count-pill{white-space:nowrap}
+.menu-management .menu-toolbar-actions .primary-small{min-height:44px;padding:11px 17px;white-space:nowrap;box-shadow:0 5px 14px #f47b2020}
+@media(max-width:520px){.menu-management .menu-add-toolbar{align-items:flex-start;gap:12px;flex-wrap:wrap}.menu-management .menu-toolbar-actions{width:100%;justify-content:flex-end}.menu-management .menu-toolbar-actions .primary-small{min-height:42px}}
