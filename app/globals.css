@@ -511,3 +511,12 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .menu-management .menu-toolbar-actions .count-pill{white-space:nowrap}
 .menu-management .menu-toolbar-actions .primary-small{min-height:44px;padding:11px 17px;white-space:nowrap;box-shadow:0 5px 14px #f47b2020}
 @media(max-width:520px){.menu-management .menu-add-toolbar{align-items:flex-start;gap:12px;flex-wrap:wrap}.menu-management .menu-toolbar-actions{width:100%;justify-content:flex-end}.menu-management .menu-toolbar-actions .primary-small{min-height:42px}}
+
+
+/* Place Add New Item in the upper-left, above the menu descriptor */
+.menu-management .menu-add-toolbar{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:12px;margin:0 0 20px;min-height:0}
+.menu-management .menu-add-top-left{align-self:flex-start;order:0;min-height:42px;padding:10px 16px;white-space:nowrap}
+.menu-management .menu-toolbar-info{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;order:1}
+.menu-management .menu-toolbar-info p{margin:0;color:var(--muted);font-size:12px}
+.menu-management .menu-toolbar-info .count-pill{white-space:nowrap;margin-left:auto}
+@media(max-width:520px){.menu-management .menu-add-toolbar{align-items:stretch}.menu-management .menu-add-top-left{align-self:flex-start}.menu-management .menu-toolbar-info{align-items:center}}
