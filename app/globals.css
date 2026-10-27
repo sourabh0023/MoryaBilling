@@ -498,3 +498,8 @@ button:disabled{opacity:.42;cursor:not-allowed}
   .app>.sidebar>.brand .brand-identity small{font-size:clamp(7px,.52vw,9px);letter-spacing:clamp(.5px,.09vw,1.5px);white-space:nowrap}
   .app>.sidebar>.brand>.install-app-btn,.app>.sidebar>.brand>.install-status{flex:0 0 38px!important;width:38px!important;height:38px!important;min-width:38px!important;margin:0!important}
 }
+
+
+/* Compact, consistently aligned count badges without redundant page headings */
+.section-count-row{display:flex;align-items:center;justify-content:flex-end;width:100%;min-height:32px;margin:0 0 12px;padding:0;box-sizing:border-box}
+.section-count-row .count-pill{margin-left:auto;white-space:nowrap}
