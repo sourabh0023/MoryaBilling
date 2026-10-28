@@ -177,7 +177,7 @@ export default function Home() {
     setEditingBillId(null);
     setSearch("");
     setCategory("All");
-    setFavoritesOnly(favoriteIds.length > 0);
+    setFavoritesOnly(false);
     setShowTableOrderModal(true);
     void selectTable(name);
   };
