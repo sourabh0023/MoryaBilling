@@ -60,6 +60,8 @@ export default function Home() {
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const [restaurantName, setRestaurantName] = useState("");
   const supabase = useMemo(() => { try { return createClient(); } catch { return null; } }, []);
   const [newTableName, setNewTableName] = useState("");
   const [restaurant, setRestaurant] = useState({name:"MORYA MISAL", address:"", phone:"", footer:"Thank you for visiting!"});
@@ -121,7 +123,7 @@ export default function Home() {
       const failed = [menuResult.error, tableResult.error, settingsResult.error, billResult.error, activeResult.error].find(Boolean);
       if (failed) { setNotice("Database setup is incomplete. Run supabase/pos-workflow.sql in the Supabase SQL Editor, then reload this page. Details: " + failed.message); return; }
       if (menuResult.data?.length) setMenuItems(menuResult.data.map((p: any) => ({ id: Number(p.id), name: p.name, category: p.category, price: Number(p.price) })));
-      else await supabase.from("pos_menu_items").upsert(initialMenu.map(p => ({ ...p, is_favorite: false })), { onConflict: "id" });
+      else await supabase.from("pos_menu_items").upsert(initialMenu.map(p => ({ ...p, is_favorite: false })), { onConflict: "restaurant_id,id" });
       if (menuResult.data?.length) setFavoriteIds(menuResult.data.filter((p: any) => p.is_favorite).map((p: any) => Number(p.id)));
       if (tableResult.data) setTableNames([...new Set(tableResult.data.map((t: any) => String(t.name).trim()).filter((name: string) => !!name))]);
       if (settingsResult.data?.value) setRestaurant({ name: settingsResult.data.value.name ?? "MORYA MISAL", address: settingsResult.data.value.address ?? "", phone: settingsResult.data.value.phone ?? "", footer: settingsResult.data.value.footer ?? "Thank you for visiting!" });
@@ -135,7 +137,7 @@ export default function Home() {
     if (!supabase || !dbReady || draftLoading || historyEditing || draftSavingPausedRef.current || table === "—") return;
     const timer = window.setTimeout(async () => {
       const result = cart.length
-        ? await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" })
+        ? await supabase.from("pos_active_orders").upsert({ table_name: table, items: cart, created_at: activeOrders.find(o => o.table_name === table)?.created_at ?? bills.find(b => b.table === table && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "restaurant_id,table_name" })
         : await supabase.from("pos_active_orders").delete().eq("table_name", table);
       if (result.error) setNotice("Could not save the draft for table " + table + ": " + result.error.message);
       else if (cart.length) setActiveOrders(old => { const found = old.find(o => o.table_name === table); return [...old.filter(o => o.table_name !== table), { table_name: table, items: cart.map(i => ({ ...i })), created_at: found?.created_at ?? new Date().toISOString() }]; });
@@ -240,7 +242,7 @@ export default function Home() {
     const now = new Date().toISOString();
     const billId = editingBillId ?? ("MB-" + Date.now().toString().slice(-7));
     const payload = { id: billId, table_name: table, items: cart, subtotal: total, discount: 0, total, payment, status: "Paid", paid_at: now, updated_at: now, ...(editingBillId ? {} : { created_at: now }) };
-    const { error } = await supabase.from("pos_bills").upsert(payload, { onConflict: "id" });
+    const { error } = await supabase.from("pos_bills").upsert(payload, { onConflict: "restaurant_id,id" });
     if (error) { printWindow?.close(); setNotice("Order was not saved. Please try again. " + error.message); savingRef.current = false; setSaving(false); return; }
     const draftDelete = await supabase.from("pos_active_orders").delete().eq("table_name", table);
     const originalBill = editingBillId ? bills.find(b => b.id === editingBillId) : undefined;
@@ -261,7 +263,7 @@ export default function Home() {
     const nav = [{name:"Billing",icon:LayoutDashboard},{name:"Menu",icon:UtensilsCrossed},{name:"Bill History",icon:ClipboardList},{name:"Reports",icon:BarChart3},{name:"Settings",icon:Settings}];
   if (authLoading) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><section className="auth-card"><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>MoryaBilling</h1><p>Checking secure sign-in…</p></section></main>;
   if (!supabase) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><section className="auth-card"><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>MoryaBilling</h1><p>Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel to continue.</p></section></main>;
-  if (!session) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><form className="auth-card" onSubmit={async e=>{e.preventDefault();setAuthError("");const {error}=await supabase.auth.signInWithPassword({email:authEmail,password:authPassword});if(error)setAuthError(error.message);}}><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>Morya<span className="orange">Billing</span></h1><p>Sign in to manage restaurant bills and saved orders.</p>{authError && <div className="notice">{authError}</div>}<label>Email address<input type="email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} autoComplete="username" required/></label><label>Password<input type="password" value={authPassword} onChange={e=>setAuthPassword(e.target.value)} autoComplete="current-password" required/></label><button className="checkout-btn" type="submit">Sign in <span>→</span></button><small>Create the owner account in Supabase Authentication first. Public sign-ups are not enabled here.</small></form></main>;
+  if (!session) return <main className={dark ? "app dark auth-screen" : "app light auth-screen"}><form className="auth-card" onSubmit={async e=>{e.preventDefault();setAuthError("");if(authMode==="signup"){const {data,error}=await supabase.auth.signUp({email:authEmail,password:authPassword,options:{data:{restaurant_name:restaurantName.trim()||"My Restaurant"}}});if(error){setAuthError(error.message);return;}setAuthError(data.session?"Restaurant account created.":"Account created. Check your email to confirm the address, then sign in.");}else{const {error}=await supabase.auth.signInWithPassword({email:authEmail,password:authPassword});if(error)setAuthError(error.message);}}}><div className="brand-mark"><UtensilsCrossed size={24}/></div><h1>Morya<span className="orange">Billing</span></h1><p>{authMode==="signup"?"Create your restaurant workspace.":"Sign in to manage restaurant bills and saved orders."}</p>{authError && <div className="notice">{authError}</div>}{authMode==="signup" && <label>Restaurant name<input value={restaurantName} onChange={e=>setRestaurantName(e.target.value)} placeholder="e.g. Morya Misal" autoComplete="organization" required/></label>}<label>Email address<input type="email" value={authEmail} onChange={e=>setAuthEmail(e.target.value)} autoComplete="username" required/></label><label>Password<input type="password" value={authPassword} onChange={e=>setAuthPassword(e.target.value)} autoComplete={authMode==="signup"?"new-password":"current-password"} minLength={6} required/></label><button className="checkout-btn" type="submit">{authMode==="signup"?"Create restaurant account":"Sign in"} <span>→</span></button><button type="button" className="print-btn" onClick={()=>{setAuthMode(authMode==="signup"?"signin":"signup");setAuthError("");}}>{authMode==="signup"?"Already have an account? Sign in":"New restaurant? Create an account"}</button><small>Each restaurant has its own private menu, tables, bills, settings and reports.</small></form></main>;
   return <main className={dark ? "app dark" : "app light"}>
     <aside className="sidebar">
       <div className="brand"><div className="brand-identity"><div className="brand-mark"><UtensilsCrossed size={22}/></div><div><strong>Morya<span>Billing</span></strong><small>RESTAURANT POS</small></div></div><InstallButton/></div>
