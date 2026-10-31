@@ -156,7 +156,7 @@ export default function Home() {
     setEditingBillId(null);
     // Preserve the previous table draft in the background; do not make the new table popup wait for this save.
     if (supabase && previousTable !== "—" && previousCart.length) {
-      void supabase.from("pos_active_orders").upsert({ table_name: previousTable, items: previousCart, created_at: activeOrders.find(o => o.table_name === previousTable)?.created_at ?? bills.find(b => b.table === previousTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "table_name" }).then(({error}) => {
+      void supabase.from("pos_active_orders").upsert({ table_name: previousTable, items: previousCart, created_at: activeOrders.find(o => o.table_name === previousTable)?.created_at ?? bills.find(b => b.table === previousTable && b.status.toLowerCase() !== "paid" && b.status.toLowerCase() !== "cancelled" && b.status.toLowerCase() !== "saved")?.createdAt ?? new Date().toISOString(), updated_at: new Date().toISOString() }, { onConflict: "restaurant_id,table_name" }).then(({error}) => {
         if (error) setNotice("Could not preserve the order for " + previousTable + ": " + error.message);
         else setActiveOrders(old => { const found = old.find(o => o.table_name === previousTable); return [...old.filter(o => o.table_name !== previousTable), { table_name: previousTable, items: previousCart, created_at: found?.created_at ?? new Date().toISOString() }]; });
       });
