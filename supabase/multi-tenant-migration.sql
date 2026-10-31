@@ -72,18 +72,6 @@ alter table public.pos_restaurant_settings add constraint pos_restaurant_setting
 alter table public.pos_bills add constraint pos_bills_pkey primary key (restaurant_id, id);
 alter table public.pos_active_orders add constraint pos_active_orders_pkey primary key (restaurant_id, table_name);
 
-alter table public.pos_menu_items alter column restaurant_id set default public.current_restaurant_id();
-alter table public.pos_restaurant_tables alter column restaurant_id set default public.current_restaurant_id();
-alter table public.pos_restaurant_settings alter column restaurant_id set default public.current_restaurant_id();
-alter table public.pos_bills alter column restaurant_id set default public.current_restaurant_id();
-alter table public.pos_active_orders alter column restaurant_id set default public.current_restaurant_id();
-
-alter table public.pos_menu_items add constraint pos_menu_items_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
-alter table public.pos_restaurant_tables add constraint pos_restaurant_tables_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
-alter table public.pos_restaurant_settings add constraint pos_restaurant_settings_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
-alter table public.pos_bills add constraint pos_bills_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
-alter table public.pos_active_orders add constraint pos_active_orders_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
-
 create or replace function public.current_restaurant_id()
 returns uuid
 language sql
@@ -96,6 +84,20 @@ as $$
   where rm.user_id = auth.uid()
   limit 1
 $$;
+
+alter table public.pos_menu_items alter column restaurant_id set default public.current_restaurant_id();
+alter table public.pos_restaurant_tables alter column restaurant_id set default public.current_restaurant_id();
+alter table public.pos_restaurant_settings alter column restaurant_id set default public.current_restaurant_id();
+alter table public.pos_bills alter column restaurant_id set default public.current_restaurant_id();
+alter table public.pos_active_orders alter column restaurant_id set default public.current_restaurant_id();
+
+alter table public.pos_menu_items add constraint pos_menu_items_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
+alter table public.pos_restaurant_tables add constraint pos_restaurant_tables_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
+alter table public.pos_restaurant_settings add constraint pos_restaurant_settings_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
+alter table public.pos_bills add constraint pos_bills_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
+alter table public.pos_active_orders add constraint pos_active_orders_restaurant_fk foreign key (restaurant_id) references public.restaurants(id) on delete cascade;
+
+
 
 create or replace function public.create_restaurant_for_new_user()
 returns trigger
