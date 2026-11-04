@@ -520,3 +520,11 @@ button:disabled{opacity:.42;cursor:not-allowed}
 .menu-management .menu-toolbar-info p{margin:0;color:var(--muted);font-size:12px}
 .menu-management .menu-toolbar-info .count-pill{white-space:nowrap;margin-left:auto}
 @media(max-width:520px){.menu-management .menu-add-toolbar{align-items:stretch}.menu-management .menu-add-top-left{align-self:flex-start}.menu-management .menu-toolbar-info{align-items:center}}
+
+/* Settings account action and currency status colors */
+.settings-row .sign-out-btn{color:#dc2626;border-color:#fecaca;background:#fef2f2}
+.settings-row .sign-out-btn:hover{background:#fee2e2;border-color:#fca5a5}
+.settings-row .currency-pill{color:#15803d;border-color:#bbf7d0;background:#f0fdf4;font-weight:700}
+[data-theme="dark"] .settings-row .sign-out-btn{color:#f87171;border-color:#7f1d1d;background:#3b1518}
+[data-theme="dark"] .settings-row .sign-out-btn:hover{background:#4c1b20;border-color:#991b1b}
+[data-theme="dark"] .settings-row .currency-pill{color:#4ade80;border-color:#166534;background:#10291b}
