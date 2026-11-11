@@ -107,6 +107,63 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, [supabase]);
   useEffect(() => {
+    if (!supabase || !session?.user?.id || authLoading) return;
+
+    // Sign out after one hour without activity. The timestamp is shared across
+    // tabs on this browser/device so activity in another MoryaBilling tab counts.
+    const storageKey = "moryabilling:last-activity:" + session.user.id;
+    const idleLimitMs = 60 * 60 * 1000;
+    let signingOut = false;
+    const readLastActivity = () => {
+      const value = Number(window.localStorage.getItem(storageKey));
+      return Number.isFinite(value) && value > 0 ? value : Date.now();
+    };
+    const writeActivity = () => {
+      if (signingOut) return;
+      const last = readLastActivity();
+      if (Date.now() - last > idleLimitMs) {
+        void expireSession();
+        return;
+      }
+      window.localStorage.setItem(storageKey, String(Date.now()));
+    };
+    const expireSession = async () => {
+      if (signingOut) return;
+      signingOut = true;
+      window.localStorage.removeItem(storageKey);
+      await supabase.auth.signOut();
+      setNotice("You were signed out after 1 hour of inactivity.");
+    };
+    const checkIdle = () => {
+      if (Date.now() - readLastActivity() >= idleLimitMs) void expireSession();
+    };
+
+    if (!window.localStorage.getItem(storageKey)) {
+      window.localStorage.setItem(storageKey, String(Date.now()));
+    }
+    const activityEvents: (keyof WindowEventMap)[] = ["pointerdown", "pointermove", "keydown", "touchstart", "wheel", "scroll"];
+    activityEvents.forEach(eventName => window.addEventListener(eventName, writeActivity, { passive: true }));
+    const timer = window.setInterval(checkIdle, 15 * 1000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkIdle();
+        if (!signingOut) writeActivity();
+      }
+    };
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === storageKey) checkIdle();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      activityEvents.forEach(eventName => window.removeEventListener(eventName, writeActivity));
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [supabase, session?.user?.id, authLoading]);
+  useEffect(() => {
     if (!supabase) { setNotice("Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel."); return; }
     if (authLoading) return;
     if (!session) { setDbReady(false); return; }
